@@ -1,0 +1,13 @@
+{
+  "name": "axle-parsi",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Axle — Less friction. More possibility. Landing page",
+  "scripts": {
+    "dev": "wrangler pages dev public",
+    "deploy": "wrangler pages deploy public --project-name axle-parsi --branch main"
+  },
+  "devDependencies": {
+    "wrangler": "^4.130.0"
+  }
+}

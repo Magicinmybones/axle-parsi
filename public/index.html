@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Axle — Less friction. More possibility.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ---------- Parsi (embedded, woff2) ---------- */
+@font-face{
+  font-family:'Parsi';
+  font-weight:300;
+  font-style:normal;
+  font-display:swap;
+  src:url(assets/fonts/parsi-300.woff2) format('woff2');
+}
+@font-face{
+  font-family:'Parsi';
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+  src:url(assets/fonts/parsi-400.woff2) format('woff2');
+}
+@font-face{
+  font-family:'Parsi';
+  font-weight:700;
+  font-style:normal;
+  font-display:swap;
+  src:url(assets/fonts/parsi-700.woff2) format('woff2');
+}
+
+/* ============================================================
+   AXLE — pixel reproduction of the 1280 x 853 reference
+   Every literal number below is a measured value from the
+   reference image. --k is the proportional scale unit:
+   at 1280x853 it resolves to exactly 1px.
+   ============================================================ */
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+button{border:0;font:inherit;color:inherit;cursor:pointer}
+
+:root{
+  --k: max(0.5px, min(100vw / 1280, 100vh / 853));
+  --k: max(0.5px, min(100vw / 1280, 100dvh / 853));
+
+  --accent:#F2702E;
+  --accent-hot:#F66E2C;
+
+  --ink-dark:#232428;          /* text on light glass */
+  --ink-light:#F0F1F3;         /* text on dark glass */
+
+  --glass-dark:rgba(7,8,10,.77);          /* fitted: a=0.77 over blur(38) */
+  --glass-pill:rgba(28,28,29,.93);
+  --glass-light:rgba(241,243,246,.60);   /* fitted: a=0.60 over blur(10) */
+  --glass-outline:rgba(180,180,178,.55);
+  --hairline:rgba(255,255,255,.62);
+
+  --r-card:calc(33 * var(--k));
+  --r-hero:calc(34 * var(--k));
+}
+
+html,body{height:100%}
+body{
+  --photo:url('assets/images/scene.jpg');
+  overflow:hidden;
+  background:#8f979d;
+  font-family:'Inter','Helvetica Neue',Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+/* ---------- full-bleed scene: the photo runs edge to edge ---------- */
+.scene{position:fixed;inset:0;overflow:hidden;z-index:0}
+.scene__img{
+  position:absolute;
+  left:0;             /* solved: photo drawn 1284 x 858 at (0,-2) */
+  top:-0.2345%;
+  width:100.3125%;
+  height:100.5807%;
+  object-fit:cover;
+  object-position:50% 50%;
+}
+.scene__scrim{
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,0) 60%,rgba(230,232,235,.20) 100%);
+}
+
+/* ---------- stage: exact reference column / row proportions ---------- */
+.stage{
+  position:fixed;inset:0;z-index:1;
+  display:grid;
+  /* 5.5 | 265.5 | 5 | 1002 | 2  = 1280 */
+  grid-template-columns:55fr 2655fr 50fr 10020fr 20fr;
+  /* 5.3 | 829.2 | 18.5 = 853 */
+  grid-template-rows:53fr 8292fr 185fr;
+}
+
+/* =========================== SIDEBAR =========================== */
+.rail{
+  grid-column:2;grid-row:2;
+  display:grid;
+  /* 265.2 | 3 | 264.5 | 4.5 | 292 = 829.2 */
+  grid-template-rows:2652fr 30fr 2645fr 45fr 2920fr;
+  min-height:0;
+}
+.card{
+  position:relative;
+  border-radius:var(--r-card);
+  overflow:hidden;
+  min-height:0;
+}
+.card--dark{
+  grid-row:1;
+  background:var(--glass-dark);
+  -webkit-backdrop-filter:blur(38px);backdrop-filter:blur(38px);
+  box-shadow:0 calc(2*var(--k)) calc(18*var(--k)) rgba(12,14,18,.22);
+}
+.card--gauge{
+  grid-row:3;
+  background:var(--glass-light);
+  -webkit-backdrop-filter:blur(7px) saturate(1.02);backdrop-filter:blur(7px) saturate(1.02);
+  border:1px solid rgba(255,255,255,.55);
+  box-shadow:0 calc(2*var(--k)) calc(18*var(--k)) rgba(12,14,18,.10);
+}
+.card--electric{
+  grid-row:5;
+  background:var(--glass-dark);
+  -webkit-backdrop-filter:blur(38px);backdrop-filter:blur(38px);
+  box-shadow:0 calc(2*var(--k)) calc(18*var(--k)) rgba(12,14,18,.22);
+}
+
+/* ---- card 1 : brand ---- */
+.brand{
+  position:absolute;
+  left:17.137%;   /* 45.5 / 265.5 */
+  top:10.068%;    /* 26.7 / 265.2 */
+  display:flex;align-items:center;
+}
+.brand svg{width:calc(47 * var(--k));height:calc(32 * var(--k));display:block}
+.brand .word{
+  margin-left:calc(16 * var(--k));  /* 114 - 98 (mark right edge) */
+  font-family:'Parsi',sans-serif;
+  font-weight:300;                    /* Light — hairline wordmark */
+  font-size:calc(33.7 * var(--k));    /* cap 19 / .564 cap-ratio */
+  letter-spacing:.02em;
+  line-height:calc(19.1 * var(--k));  /* .568em: cap-top sits on the box top */
+  color:#F3F4F5;
+  position:relative;
+  top:calc(1 * var(--k));
+  transform-origin:left center;
+}
+
+.dots{
+  position:absolute;
+  left:8.851%;    /* 23.5 / 265.5 */
+  top:46.267%;    /* 122.7 / 265.2 */
+  display:flex;
+  gap:calc(4 * var(--k));          /* centres 28.2 apart, Ø24 */
+}
+.dot{
+  width:calc(24 * var(--k));height:calc(24 * var(--k));
+  border-radius:50%;
+  display:grid;place-items:center;
+}
+.dot--on{background:var(--accent)}
+.dot--off{border:calc(1.3 * var(--k)) solid rgba(255,255,255,.62)}
+.dot::after{
+  content:"";width:calc(5 * var(--k));height:calc(5 * var(--k));
+  border-radius:50%;background:rgba(255,255,255,.92);
+}
+
+.stat__num{
+  position:absolute;
+  left:8.851%;
+  top:71.041%;    /* ink cap-top y = 194 */
+  font-family:'Parsi',sans-serif;
+  font-weight:700;                    /* Bold */
+  font-size:calc(65.5 * var(--k));    /* cap 37 / .564 */
+  line-height:calc(37.2 * var(--k));
+  letter-spacing:.005em;
+  color:#F1F2F4;
+  transform-origin:left top;
+}
+.stat__rule{
+  position:absolute;
+  left:51.035%;   /* x = 141 */
+  top:71.908%;    /* 196 → 228 */
+  width:1px;
+  height:calc(33 * var(--k));
+  background:rgba(255,255,255,.34);
+}
+.stat__label{
+  position:absolute;
+  left:63.842%;   /* ink x = 175 */
+  top:68.552%;    /* ink cap-top y = 190 */
+  font-size:calc(13.5 * var(--k));
+  font-weight:400;
+  line-height:calc(16 * var(--k));
+  letter-spacing:.005em;
+  color:#E7E8EA;
+  white-space:pre-line;
+}
+
+/* ---- card 2 : emissions gauge ---- */
+.gauge__title{
+  position:absolute;left:0;right:0;
+  top:6.286%;                       /* 291 - 273.5 */
+  text-align:center;
+  font-size:calc(15.2 * var(--k));
+  font-weight:400;
+  letter-spacing:.012em;
+  color:#26272B;
+}
+.gauge__ring{
+  position:absolute;
+  left:49.72%;                      /* ring centre = 137.5 */
+  top:52.00%;                       /* ring centre = 411   */
+  transform:translate(-50%,-50%);
+  width:calc(200 * var(--k));       /* scales with the title, not the card */
+  height:calc(200 * var(--k));
+}
+.gauge__ring svg{width:100%;height:100%;display:block}
+.gauge__value{
+  position:absolute;
+  left:0;right:0;
+  top:53.88%;                       /* cap-centre = reference ink centre (y 416) */
+  text-align:center;
+  font-family:'Parsi',sans-serif;
+  font-weight:300;                  /* Light — reads as airy as the dotted ring */
+  font-size:calc(40.8 * var(--k)); /* cap 23 / .564 */
+  letter-spacing:.02em;
+  color:#232427;
+  transform:translateY(-50%);
+}
+
+/* ---- card 3 : electric journeys ---- */
+.ej__title{
+  position:absolute;
+  left:17.891%;   /* 53 - 5.5 */
+  top:9.760%;     /* block top for cap at 574 */
+  font-size:calc(18.5 * var(--k));
+  font-weight:400;
+  line-height:calc(19.5 * var(--k));
+  letter-spacing:.02em;
+  transform:scaleX(1.08);transform-origin:left top;
+  color:#EDEEF0;
+}
+.leaf{
+  position:absolute;
+  left:16.761%;   /* 50 - 5.5 */
+  top:31.336%;    /* 634 - 542.5 */
+  width:calc(53.5 * var(--k));height:calc(53.5 * var(--k));
+  border-radius:50%;
+  background:var(--accent);
+  display:grid;place-items:center;
+}
+.leaf svg{width:calc(25 * var(--k));height:calc(25 * var(--k));display:block}
+.ej__num{
+  position:absolute;
+  left:16.761%;
+  top:58.048%;    /* ink cap-top y = 713 */
+  font-family:'Parsi',sans-serif;
+  font-weight:700;                    /* Bold */
+  font-size:calc(59.2 * var(--k));    /* digit height 34 / .574 (8 overshoots cap) */
+  line-height:calc(33.6 * var(--k));
+  letter-spacing:.004em;
+  color:#F1F2F4;
+  transform-origin:left top;
+}
+.bar{
+  position:absolute;
+  left:17.326%;   /* 51.5 - 5.5 */
+  top:79.966%;    /* 776 - 542.5 */
+  width:65.725%;
+  height:calc(34 * var(--k));
+  border-radius:calc(3 * var(--k));
+  overflow:hidden;
+  display:flex;
+}
+.bar__fill{
+  width:61.3%;                      /* 107 / 174.5 */
+  background:linear-gradient(180deg,
+      rgba(246,110,44,.02) 0%,
+      rgba(246,110,44,.20) 26%,
+      rgba(246,110,44,.62) 55%,
+      rgba(246,110,44,.93) 82%,
+      #F86F2A 100%);
+}
+.bar__rest{
+  flex:1;
+  background:linear-gradient(180deg,
+      rgba(190,190,186,.03) 0%,
+      rgba(190,190,186,.18) 26%,
+      rgba(190,190,186,.46) 55%,
+      rgba(196,196,192,.68) 82%,
+      rgba(206,206,202,.80) 100%);
+}
+
+/* =========================== RIGHT COLUMN =========================== */
+.main{
+  grid-column:4;grid-row:2;
+  display:grid;
+  /* 5.2 | 70.5 | 9 | 743 | 1.5  = 829.2 */
+  grid-template-rows:52fr 705fr 90fr 7430fr 15fr;
+  min-height:0;
+}
+
+/* ---- nav ---- */
+.nav{
+  grid-row:2;
+  display:flex;align-items:stretch;
+  padding-left:calc(5 * var(--k));   /* Home pill starts at x=280.5 */
+  gap:calc(3.5 * var(--k));
+  min-height:0;
+}
+.pill{
+  border-radius:999px;
+  text-decoration:none;
+  display:flex;align-items:center;justify-content:center;
+  white-space:nowrap;
+  font-size:calc(14 * var(--k));
+  font-weight:400;
+  letter-spacing:.012em;
+  /* Elastic: each pill grows in proportion to its designed width, so the bar
+     always reaches the hero's right edge. --w is that designed width in
+     reference px; the cap stops any pill ballooning on ultra-wide screens. */
+  flex-grow:var(--w,132);
+  flex-shrink:0;
+  flex-basis:calc(var(--w,132) * var(--k));
+  max-width:calc(var(--w,132) * 1.35 * var(--k));
+}
+.pill--solid{background:var(--glass-pill);color:#F2F3F5;
+  -webkit-backdrop-filter:blur(30px);backdrop-filter:blur(30px)}
+.pill--ghost{
+  background:transparent;
+  border:1px solid var(--hairline);
+  color:rgba(255,255,255,.93);
+  -webkit-backdrop-filter:blur(40px);backdrop-filter:blur(40px);
+}
+.pill--home{--w:132}
+.pill--a{--w:138.5}
+.pill--b{--w:131.5;margin-left:calc(-1 * var(--k))}
+.pill--c{--w:135;margin-left:calc(-0.5 * var(--k))}
+.pill--cta{
+  --w:227;
+  margin-left:calc(-2.8 * var(--k));
+  justify-content:flex-start;
+  padding-left:calc(38 * var(--k));   /* text ink starts at 868 */
+  font-size:calc(13.5 * var(--k));
+  letter-spacing:.012em;
+  word-spacing:calc(3 * var(--k));
+  position:relative;
+}
+/* The pills live in .nav__links so they can become a panel on tablet. On every
+   other tier the wrapper is display:contents, so they remain direct flex
+   children of .nav and the desktop row is untouched. */
+.nav__links{display:contents}
+.nav__burger{display:none}
+
+.nav__gap{
+  flex:1 0 calc(11 * var(--k));   /* 11 + two 3.5 gaps = the designed 18 */
+  align-self:stretch;
+}
+
+.grid4{
+  position:absolute;
+  right:calc(22.7 * var(--k));       /* dots ink 1017..1032 */
+  top:50%;transform:translateY(-50%);
+  width:calc(16 * var(--k));height:calc(16 * var(--k));
+  display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;
+  gap:calc(4 * var(--k));
+}
+.grid4 i{background:#F2F3F5;border-radius:50%;display:block}
+
+.iconbtn{
+  flex:0 0 auto;
+  width:calc(63.5 * var(--k));
+  border-radius:50%;
+  background:var(--glass-pill);
+  -webkit-backdrop-filter:blur(30px);backdrop-filter:blur(30px);
+  display:grid;place-items:center;
+  aspect-ratio:1;
+  align-self:center;
+  height:calc(63.5 * var(--k));
+}
+  /* the CTA-to-icon gap now lives in .nav__gap so it can stretch */
+.iconbtn + .iconbtn{margin-left:calc(0.5 * var(--k))}
+.iconbtn svg{width:calc(27 * var(--k));height:calc(27 * var(--k));display:block}
+
+/* ---- hero ---- */
+.hero{
+  grid-row:4;
+  position:relative;
+  min-height:0;
+}
+/* the panel edge: drawn as an overlay ring so it costs no layout and the
+   absolutely-positioned hero content keeps its measured coordinates.
+   Measured: rect 276,90 -> 1278,833   ring 1.6px  rgba(255,255,255,.68)  r=34 */
+.hero::after{
+  content:"";
+  position:absolute;inset:0;
+  border-style:solid;
+  border-color:rgba(255,255,255,.64);
+  border-width:max(1px, calc(2 * var(--k)));
+  border-radius:var(--r-hero);
+  pointer-events:none;
+}
+
+/* markers: JS pins these to their source-image coordinates so they stay
+   locked to the buildings at any viewport. The % values below are the
+   no-JS fallback, measured against the 1280 x 853 reference. */
+.marker{position:absolute;filter:drop-shadow(0 calc(2*var(--k)) calc(4*var(--k)) rgba(0,0,0,.22))}
+.marker svg{display:block;width:100%;height:100%}
+.marker--bike{left:29.375%;top:39.51%;width:calc(25 * var(--k));height:calc(34 * var(--k))}
+.marker--bolt{left:83.52%;top:45.49%;width:calc(26 * var(--k));height:calc(34 * var(--k))}
+.marker--pin {left:95.08%;top:46.78%;width:calc(23 * var(--k));height:calc(31 * var(--k))}
+.hero__mark{
+  position:absolute;left:48.44%;top:45.02%;
+  width:calc(27 * var(--k));height:calc(19 * var(--k));
+}
+.hero__mark svg{display:block;width:100%;height:100%}
+
+/* headline + CTA, anchored bottom-left */
+.pitch{
+  position:absolute;
+  left:7.884%;                        /* 79 / 1002 */
+  bottom:3.432%;                      /* 25.5 / 743 */
+}
+.pitch h1{
+  font-family:'Parsi',sans-serif;
+  font-weight:400;                      /* Regular */
+  font-size:calc(54 * var(--k));        /* cap 30.5 / .564 */
+  line-height:calc(44 * var(--k));      /* baseline-to-baseline unchanged */
+  letter-spacing:0;                     /* Parsi is already wide; no tracking */
+  color:#1B1C1F;
+  margin-bottom:calc(19 * var(--k));    /* holds line-2 baseline at y 727 */
+}
+.btn{
+  height:calc(53 * var(--k));
+  width:calc(303 * var(--k));
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.72);
+  background:rgba(186,188,192,.20);
+  -webkit-backdrop-filter:blur(34px);backdrop-filter:blur(34px);
+  display:flex;align-items:center;
+  padding-left:calc(3.5 * var(--k));
+  cursor:pointer;
+  color:#1D1E21;
+  font-family:inherit;
+}
+.btn__disc{
+  width:calc(43 * var(--k));height:calc(43 * var(--k));
+  border-radius:50%;
+  background:#26272A;
+  display:grid;place-items:center;flex:0 0 auto;
+}
+.btn__disc svg{width:calc(16 * var(--k));height:calc(16 * var(--k));display:block}
+.btn__label{
+  margin-left:calc(43.5 * var(--k));  /* ink starts at 447 */
+  font-size:calc(14 * var(--k));
+  font-weight:400;
+  letter-spacing:0;
+  position:relative;top:calc(-3 * var(--k));
+}
+
+/* riders badge + paragraph, anchored bottom-right-ish */
+.aside{
+  position:absolute;
+  left:62.076%;                       /* ink x = 898 */
+  bottom:3.095%;
+  width:32.136%;
+}
+.riders{
+  /* OUTER chip: 898 -> 1037 x 710.5 -> 743.5, carries the rim */
+  position:relative;
+  width:calc(139 * var(--k));
+  height:calc(33 * var(--k));
+  border-radius:999px;
+  background:rgba(70,68,66,.24);          /* fill ~157 over backdrop 186 */
+  border:1px solid rgba(255,255,255,.26);
+  background-clip:padding-box;            /* keep the fill from dimming the rim */
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  margin-bottom:calc(17.5 * var(--k));
+}
+.riders__pill{
+  /* INNER text pill, inset inside the chip: 945.5 -> 1035.5 x 712.5 -> 741.5 */
+  position:absolute;
+  left:calc(46.5 * var(--k));
+  top:calc(2 * var(--k));                 /* 713.5 -> 741.5 */
+  width:calc(90 * var(--k));
+  height:calc(28 * var(--k));
+  border-radius:999px;
+  background:rgba(45,43,41,.245);         /* ~129.5 over the chip fill */
+  box-shadow:inset 0 0 calc(3 * var(--k)) rgba(255,255,255,.30);
+  display:flex;align-items:center;
+  white-space:nowrap;
+  padding-left:calc(11 * var(--k));       /* text ink at 957 */
+  font-size:calc(11.6 * var(--k));
+  font-weight:400;
+  letter-spacing:.012em;
+  color:#F4F5F6;
+}
+.avatars{
+  position:absolute;
+  left:calc(-1 * var(--k));            /* group spans 898 -> 946 */
+  top:50%;transform:translateY(-50%);
+  display:flex;
+  z-index:2;
+}
+.av{
+  width:calc(32 * var(--k));height:calc(32 * var(--k));
+  border-radius:50%;
+  border:calc(2 * var(--k)) solid rgba(255,255,255,.95);
+  background:#c9ccd1 50% 40%/cover no-repeat;   /* plain disc if the photo is unreachable */
+  flex:0 0 auto;
+}
+.av + .av{margin-left:calc(-16 * var(--k))}    /* centres 16px apart */
+/* Two Unsplash portraits, both free licence, no attribution required — kept in
+   the comment so the source is traceable:
+     av--a  Michael Dam   unsplash.com/photos/mEZ3PoFGs_k
+     av--b  Alex Suprun   unsplash.com/photos/ZHvM3XIOHoE
+   Tight studio head crops, which is what survives a 32-unit circle; the two
+   that were here before were half-body frames that lost the face at this size.
+   160px, not 96: the disc is 32 x --k, and --k reaches 1.35 on mobile, so a 3x
+   screen asks for ~130 device px and 96 was arriving soft. */
+.av--a{background-image:url('https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=160&h=160&fit=crop&crop=faces,edges&q=80&auto=format')}
+.av--b{background-image:url('https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=160&h=160&fit=crop&crop=faces,edges&q=80&auto=format')}
+.aside p{
+  font-size:calc(13.5 * var(--k));
+  line-height:calc(16.3 * var(--k));
+  font-weight:400;
+  letter-spacing:.004em;
+  color:#26272A;
+}
+
+/* floating map controls */
+.fab{
+  position:absolute;
+  left:91.03%;                        /* 1186.5 - 278 */
+  top:3.59%;                          /* 118.5 - 92  */
+  width:calc(71.5 * var(--k));
+  height:calc(153 * var(--k));
+  border-radius:999px;
+  background:rgba(32,33,30,.66);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+}
+.fab__plus,.fab__layers{
+  position:absolute;left:50%;transform:translateX(-50%);
+  border-radius:50%;display:grid;place-items:center;
+}
+.fab__plus{
+  top:calc(17 * var(--k));
+  width:calc(38 * var(--k));height:calc(38 * var(--k));
+  background:#FBFBFA;
+}
+.fab__plus svg{width:calc(16 * var(--k));height:calc(16 * var(--k))}
+.fab__layers{
+  top:calc(92 * var(--k));
+  width:calc(49 * var(--k));height:calc(49 * var(--k));
+  background:#1B1C1E;
+}
+.fab__layers svg{width:calc(21 * var(--k));height:calc(21 * var(--k))}
+
+/* focus visibility */
+a:focus-visible,button:focus-visible{outline:calc(2*var(--k)) solid #F2702E;outline-offset:calc(2*var(--k))}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* =========================== ENTRANCE =========================== */
+/* One choreographed sequence, ~1.8s, then nothing. Every initial state below is
+   scoped to .js-entrance, a class an inline <head> script adds before first
+   paint — so there is no flash, and if JS never runs the class is never added
+   and the page simply renders finished.
+
+   Motion language, five behaviours, each earned by the element's role:
+     A  masked line reveal .... the headline, rising out of its own mask
+     B  surface settle ........ hero frame + rail cards (glass panels)
+     C  content lift .......... bottom-anchored copy and CTA, rising
+     D  top settle ............ top-anchored chrome (nav, map controls), descending
+     E  bloom ................. the three map pins, the last punctuation
+
+   Direction is derived from anchoring, not chosen at random: things pinned to
+   the top edge come down, things sitting on the bottom edge come up, surfaces
+   don't travel at all. The background photograph never moves.               */
+
+.ln,.ln__i{display:block}
+
+/* The headline's line-height is tighter than its em box, so 'possibility' hangs
+   about 2 units below the line box. The mask needs that much slack at the
+   bottom or the descenders get shaved. Padding adds it and a negative margin
+   takes it back — but as plain blocks those margins would collapse with each
+   other and with the h1, adding 9 units between the lines. Flex items don't
+   collapse, so the h1 becomes a column for the duration and the compensation
+   is exact. Both rules lift with the class, leaving the h1 as it was authored. */
+.js-entrance .pitch h1{display:flex;flex-direction:column}
+.js-entrance .pitch h1 .ln{
+  overflow:hidden;
+  padding-bottom:calc(4 * var(--k));
+  margin-bottom:calc(-4 * var(--k));
+}
+
+/* ---- TWO REVEAL PRIMITIVES, CHOSEN BY WHAT AN ELEMENT IS MADE OF ----
+
+   About two thirds of this design is backdrop-filter glass: the nav pills, the
+   icon buttons, the three rail cards, the CTA, the riders chip, the map
+   controls. Such an element cannot be revealed with opacity or transform:
+
+     · opacity < 1 ON THE ELEMENT composites its filtered result against the
+       UNfiltered backdrop, and the border-radius clip is dropped from the
+       filtered region while it does — so a 999px pill renders as a blurred
+       rectangle for the whole length of the fade. This was the visible bug.
+     · opacity < 1 ON AN ANCESTOR creates a backdrop root, so descendants
+       sample an empty backdrop and the glass goes flat. Fading .hero was
+       doing this to the CTA, the chip and the controls.
+     · transform re-filters a 30–40px kernel at a new offset every frame.
+
+   So: SURFACES are revealed by clip-path, CONTENT by opacity and transform.
+
+   And WHERE the clip goes matters as much as which property it is. Any
+   grouping property — opacity, filter, mask, clip-path, transform,
+   mix-blend-mode, isolation, contain — turns the element carrying it into a
+   BACKDROP ROOT for everything beneath it. A backdrop-filtered descendant then
+   samples that empty buffer instead of the page, and renders as flat fill with
+   no blur until the property goes away. Putting the wipe on .nav and on .rail
+   did exactly that to the pills and the three cards: they entered with the
+   wrong opacity and corrected the instant the class came off.
+
+   On the glass element ITSELF a clip is fine, because the filter resolves
+   against the real backdrop first and the result is clipped afterwards. So
+   every wipe below sits on the glass element, never on a container of it.
+   Only the wiping edge is at 0; the other three sides are negative so nothing
+   is cropped by accident.
+
+   TWO CLAUSES, both machine-checked:
+     1. no grouping property on any ANCESTOR of a backdrop-filter element
+     2. on the glass itself, clip-path only — never opacity, never transform
+
+   Clause 1 is why .hero, .rail and .nav no longer animate at all: each wraps
+   glass, so each belongs to the stage now, with the photograph.            */
+
+.js-entrance .nav .pill,
+.js-entrance .nav .iconbtn,
+.js-entrance .rail > .card,
+.js-entrance .btn,
+.js-entrance .riders,
+.js-entrance .fab{clip-path:inset(-25% 100% -25% -25%)}
+
+.js-entrance .pitch h1 .ln__i{transform:translateY(120%)}
+.js-entrance .aside p{opacity:0;transform:translateY(calc(10 * var(--k)))}
+.js-entrance .marker{opacity:0;transform:scale(.86)}
+
+/* Reduced motion: no class is ever added, so this is only a belt-and-braces
+   guarantee that nothing can be left hidden. */
+@media (prefers-reduced-motion:reduce){
+  .js-entrance .nav .pill,.js-entrance .nav .iconbtn,.js-entrance .rail > .card,
+  .js-entrance .btn,.js-entrance .riders,.js-entrance .fab{clip-path:none}
+  .js-entrance .aside p,.js-entrance .marker{opacity:1;transform:none}
+  .js-entrance .pitch h1 .ln__i{transform:none}
+}
+
+
+
+/* ---- inside the cards ----
+   No new vocabulary: each element takes whichever of the five behaviours its
+   role and anchoring already imply. Titles and the wordmark sit on the top edge
+   so they descend (D). The label and the bar sit low so they rise (C). Dots,
+   leaf, ring and the hairline bloom or draw (E). And the three display numbers
+   get the headline's own masked reveal (A) — they are the same kind of type
+   doing the same kind of job, so they should move the same way.             */
+
+.rise{display:block}
+
+.js-entrance .stat__num,
+.js-entrance .gauge__value,
+.js-entrance .ej__num{overflow:hidden}
+/* these two are anchored by top/left, so the padding cannot move them; the
+   matching negative margin is only needed for the mobile stack, where they
+   become flex items and height counts. */
+.js-entrance .stat__num,
+.js-entrance .ej__num{
+  padding-bottom:calc(2 * var(--k));
+  margin-bottom:calc(-2 * var(--k));
+}
+.js-entrance .rise{transform:translateY(130%)}
+
+.js-entrance .brand,
+.js-entrance .gauge__title,
+.js-entrance .ej__title{opacity:0;transform:translateY(calc(-6 * var(--k)))}
+.js-entrance .stat__label,
+.js-entrance .bar{opacity:0;transform:translateY(calc(8 * var(--k)))}
+.js-entrance .dot{opacity:0;transform:scale(.4)}
+.js-entrance .leaf{opacity:0;transform:scale(.8)}
+.js-entrance .gauge__ring{transform:translate(-50%,-50%) scale(.92);opacity:0}
+.js-entrance .stat__rule{opacity:0;transform:scaleY(.08);transform-origin:top center}
+.js-entrance .bar__fill{transform:scaleX(.04);transform-origin:left center}
+
+@media (prefers-reduced-motion:reduce){
+  .js-entrance .brand,.js-entrance .gauge__title,.js-entrance .ej__title,
+  .js-entrance .stat__label,.js-entrance .bar,.js-entrance .dot,
+  .js-entrance .leaf,.js-entrance .stat__rule,.js-entrance .bar__fill,
+  .js-entrance .rise{opacity:1;transform:none}
+  .js-entrance .gauge__ring{opacity:1;transform:translate(-50%,-50%)}
+}
+
+/* =========================== TABLET =========================== */
+/* The desktop composition is one proportional system: every value is N x --k,
+   so it never breaks structurally — it goes illegible, and in portrait the fr
+   rows stretch the cards into columns. Measured, it holds down to --k 0.875
+   (1120 x 747); at 1024x768 the smallest label is 10.8px, too small to touch.
+   So tablet starts at 1119px, not at a device width.
+
+   Two arrangements, chosen by the shape of the space rather than by device:
+   landscape keeps the desktop side-rail on a tighter frame, portrait moves the
+   rail under the hero. Both collapse the nav links into a burger panel.        */
+
+@media (max-width:1119px), (max-height:480px){
+  .nav__burger{display:grid}
+  .nav__links{
+    display:flex;flex-direction:column;
+    gap:calc(7 * var(--k));
+    position:absolute;z-index:6;
+    top:calc(100% + 9 * var(--k));
+    left:calc(5 * var(--k));
+    width:calc(268 * var(--k));
+    padding:calc(11 * var(--k));
+    border-radius:var(--r-card);
+    background:var(--glass-dark);
+    -webkit-backdrop-filter:blur(38px);backdrop-filter:blur(38px);
+    border:1px solid rgba(255,255,255,.14);
+    box-shadow:0 calc(6 * var(--k)) calc(26 * var(--k)) rgba(12,14,18,.34);
+    opacity:0;visibility:hidden;
+    transform:translateY(calc(-6 * var(--k)));
+    transition:opacity .22s ease, transform .22s ease, visibility .22s;
+  }
+  .nav.is-open .nav__links{opacity:1;visibility:visible;transform:none}
+  .nav__links .pill{
+    width:100%;max-width:none;flex:0 0 auto;
+    height:calc(52 * var(--k));
+  }
+  .nav__links .pill--b,
+  .nav__links .pill--c,
+  .nav__links .pill--cta{margin-left:0}
+  .nav__links .pill--cta{padding-left:calc(24 * var(--k))}
+  .nav__links .grid4{right:calc(20 * var(--k))}
+  .nav{position:relative;overflow:visible}
+  .main{overflow:visible}
+}
+
+/* --- landscape tablet: keep the desktop architecture on a tighter frame ---
+   Trimming the outer margins and the rail from 265.5 to 250 units drops the
+   design width 1280 -> 1180, which buys back ~9% of --k at the same viewport. */
+@media (min-width:701px) and (max-width:1119px) and (min-height:481px)
+   and (min-aspect-ratio:6/5){
+  :root{
+    --k: max(0.5px, min(100vw / 1180, 100vh / 800));
+    --k: max(0.5px, min(100vw / 1180, 100dvh / 800));
+  }
+  .stage{
+    grid-template-columns:8fr 250fr 8fr 906fr 8fr;   /* = 1180 */
+    grid-template-rows:8fr 776fr 16fr;               /* = 800  */
+  }
+  .rail{grid-template-rows:248fr 3fr 247fr 4fr 274fr}
+}
+
+/* --- portrait tablet: hero takes the height, rail becomes a row beneath it ---
+   --k is solved so the three cards land back on their designed 265.5-unit width
+   (3 x 265.5 + 2 x 10 gaps + 2 x 14 margins = 844.5 units across the viewport),
+   which keeps every card's internal layout on its measured coordinates.        */
+@media (min-width:701px) and (max-width:1119px) and (min-height:481px)
+   and (max-aspect-ratio:6/5){
+  :root{--k: clamp(.82px, 100vw / 845, 1.34px)}
+  .stage{
+    grid-template-columns:calc(14 * var(--k)) 1fr calc(14 * var(--k));
+    grid-template-rows:calc(14 * var(--k)) auto calc(12 * var(--k)) 1fr
+                       calc(12 * var(--k)) auto calc(14 * var(--k));
+  }
+  .main{grid-column:2;grid-row:2 / span 3;display:contents}
+
+  .nav{grid-column:2;grid-row:2;height:calc(64 * var(--k));padding-left:0}
+  .nav__links{left:0}
+
+  .hero{grid-column:2;grid-row:4;min-height:calc(320 * var(--k))}
+  .fab{left:auto;right:calc(20 * var(--k));top:calc(20 * var(--k))}
+
+  /* headline scaled so it still clears the riders column on one line */
+  .pitch h1{font-size:calc(46 * var(--k));line-height:calc(38 * var(--k))}
+
+  .rail{
+    grid-column:2;grid-row:6;
+    grid-template-columns:1fr 1fr 1fr;
+    grid-template-rows:1fr;
+    gap:calc(10 * var(--k));
+    height:calc(276 * var(--k));
+  }
+  .card--dark    {grid-column:1;grid-row:1}
+  .card--gauge   {grid-column:2;grid-row:1}
+  .card--electric{grid-column:3;grid-row:1}
+}
+
+/* =========================== NARROW / PHONE =========================== */
+/* Narrow / portrait: the frame still fills the viewport exactly —
+   the columns re-flow instead of shrinking the type to nothing.   */
+@media (max-width:700px), (max-height:480px){
+  :root{--k:clamp(.62px, min(100vw / 430, 100vh / 900), 1.35px)}
+  .stage{
+    grid-template-columns:calc(8 * var(--k)) 1fr calc(8 * var(--k));
+    grid-template-rows:calc(8 * var(--k)) auto calc(10 * var(--k)) 1fr calc(10 * var(--k)) auto calc(10 * var(--k));
+  }
+  .main{grid-column:2;grid-row:2 / span 3;display:contents}
+  .rail{grid-column:2;grid-row:6;display:grid;
+        grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr;
+        gap:calc(8 * var(--k));height:calc(186 * var(--k))}
+  .card--dark,.card--gauge,.card--electric{grid-row:1}
+  .card--dark{grid-column:1}
+  .card--gauge{grid-column:2}
+  .card--electric{grid-column:3}
+
+  /* The five pills no longer fit a phone row, so they move into the same
+     burger panel the tablet uses. .nav__gap keeps the tools flush right. */
+  .nav{grid-column:2;grid-row:2;height:calc(56 * var(--k));padding-left:0}
+  /* --k bottoms out at .62 on short phones, which would put the menu labels
+     under 10px — these floors hold the panel legible and tappable without
+     touching how it renders anywhere wider. */
+  .nav__links{left:0;
+    width:max(240px, calc(268 * var(--k)));
+    padding:max(9px, calc(11 * var(--k)));
+  }
+  .nav__links .pill{
+    height:max(42px, calc(52 * var(--k)));
+    font-size:max(14px, calc(15 * var(--k)));
+  }
+  .nav__links .pill--cta{font-size:max(15px, calc(16 * var(--k)))}
+  .pill{font-size:calc(15 * var(--k));
+        flex:0 0 auto;flex-basis:auto;max-width:none}
+  .pill--home{width:auto;padding:0 calc(26 * var(--k))}
+  .pill--a,.pill--b,.pill--c{width:auto;padding:0 calc(22 * var(--k));margin-left:0}
+  .pill--cta{width:auto;padding:0 calc(52 * var(--k)) 0 calc(24 * var(--k));margin-left:0;font-size:calc(16 * var(--k))}
+  .grid4{right:calc(20 * var(--k))}
+  .iconbtn{width:calc(56 * var(--k));height:calc(56 * var(--k))}
+  .iconbtn:first-of-type{margin-left:calc(10 * var(--k))}
+
+  /* Hero: .pitch and .aside become bottom-anchored flex items that wrap only
+     when the width genuinely runs out. A portrait phone stacks them; a
+     landscape phone keeps the desktop's two-column bottom row. Neither is
+     hidden — the riders chip and paragraph stay in every layout. */
+  .hero{
+    grid-column:2;grid-row:4;min-height:calc(180 * var(--k));
+    display:flex;flex-wrap:wrap;
+    align-items:flex-end;align-content:flex-end;
+    gap:calc(20 * var(--k)) calc(24 * var(--k));
+    padding:0 calc(26 * var(--k)) calc(22 * var(--k));
+  }
+  .scene__img{object-position:58% 50%}
+
+  .pitch{position:static;left:auto;right:auto;bottom:auto;
+         flex:1 1 calc(300 * var(--k))}
+  .pitch h1{font-size:calc(43 * var(--k));line-height:calc(37 * var(--k));letter-spacing:0;
+            margin-bottom:calc(15 * var(--k))}
+  .btn{width:calc(258 * var(--k));height:calc(48 * var(--k))}
+  .btn__disc{width:calc(39 * var(--k));height:calc(39 * var(--k))}
+  .btn__label{margin-left:calc(26 * var(--k));font-size:calc(14 * var(--k))}
+  .aside{position:static;left:auto;bottom:auto;
+         flex:1 1 calc(300 * var(--k));
+         width:auto;max-width:calc(400 * var(--k))}   /* holds the measure on
+                                                         wide landscape phones */
+  /* right:0 re-anchors the controls to the hero's padding box, so they line up
+     with the text column edge instead of floating 10 units past it. */
+  .fab{left:auto;right:0;top:calc(16 * var(--k));
+       width:calc(62 * var(--k));height:calc(132 * var(--k))}
+  .fab__plus{top:calc(13 * var(--k));width:calc(36 * var(--k));height:calc(36 * var(--k))}
+  .fab__layers{top:calc(76 * var(--k));width:calc(44 * var(--k));height:calc(44 * var(--k))}
+  .marker--bike{left:26%;top:36%}
+  .marker--bolt{left:80%;top:43%}
+  .marker--pin{left:92%;top:45%}
+
+  /* ---- compact stat cards ----
+     The desktop cards place every element absolutely at its measured pixel.
+     That does not survive being shrunk into a third of a phone screen, so the
+     narrow layout switches them to real centred stacks instead. ---- */
+  .card--dark,.card--electric{
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    gap:calc(7 * var(--k));
+    padding:calc(11 * var(--k));
+    text-align:center;
+  }
+  .brand,.dots,.stat__num,.stat__rule,.stat__label,
+  .ej__title,.leaf,.ej__num,.bar{
+    position:static;left:auto;right:auto;top:auto;bottom:auto;margin:0;
+  }
+  /* the same hairline divider, laid across the stack rather than beside it */
+  .stat__rule{width:calc(46 * var(--k));height:1px;flex:0 0 auto}
+  .js-entrance .stat__rule{transform:scaleX(.08);transform-origin:center}
+
+  .brand{justify-content:center}
+  .brand svg{width:calc(26 * var(--k));height:calc(18 * var(--k))}
+  .brand .word{
+    font-size:calc(21 * var(--k));line-height:calc(11.9 * var(--k));
+    letter-spacing:.02em;margin-left:calc(7 * var(--k));
+    top:0;transform:none;
+  }
+  .stat__num{
+    font-size:calc(43.5 * var(--k));line-height:calc(24.7 * var(--k));
+    transform:none;
+  }
+  .stat__label{
+    font-size:calc(11.5 * var(--k));line-height:calc(13.5 * var(--k));
+    letter-spacing:.01em;text-align:center;
+  }
+
+  /* gauge: ring and value share one centre point so they can never drift apart */
+  .gauge__title{top:calc(10 * var(--k));font-size:calc(13 * var(--k))}
+  .gauge__ring{
+    left:50%;top:calc(50% + 7 * var(--k));
+    transform:translate(-50%,-50%);
+    width:calc(92 * var(--k));height:calc(92 * var(--k));
+  }
+  .gauge__value{
+    top:calc(50% + 7 * var(--k));
+    transform:translateY(-50%);
+    font-size:calc(27 * var(--k));letter-spacing:.02em;
+  }
+
+  .ej__title{
+    font-size:calc(13 * var(--k));line-height:calc(14 * var(--k));
+    letter-spacing:.01em;transform:none;
+  }
+  .leaf{width:calc(28 * var(--k));height:calc(28 * var(--k))}
+  .leaf svg{width:calc(14 * var(--k));height:calc(14 * var(--k))}
+  .ej__num{
+    font-size:calc(32.5 * var(--k));line-height:calc(18.7 * var(--k));
+    transform:none;
+  }
+  .bar{
+    width:calc(100% - 4 * var(--k));height:calc(13 * var(--k));
+    border-radius:calc(3 * var(--k));flex:0 0 auto;
+  }
+}
+</style>
+<script>
+/* Added before first paint so the entrance's initial states apply immediately.
+   If scripting is off this never runs, the class is absent, and the page
+   renders in its finished state — the design is never dependent on JS. */
+(function(){
+  try{
+    if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches
+       && 'animate' in Element.prototype){
+      document.documentElement.classList.add('js-entrance');
+    }
+  }catch(e){}
+})();
+</script>
+</head>
+<body>
+
+<div class="scene">
+  <img class="scene__img" src="assets/images/scene.jpg" alt="Model city at dusk: tram lines converging on a glass transit hub">
+  <div class="scene__scrim"></div>
+
+  <span class="marker marker--bike" aria-hidden="true">
+    <svg viewBox="0 0 25 34">
+      <path fill="#F2702E" d="M12.5 0C5.6 0 0 5.5 0 12.3c0 7.1 8.4 16.9 11.4 21.1a1.3 1.3 0 0 0 2.2 0C16.6 29.2 25 19.4 25 12.3 25 5.5 19.4 0 12.5 0Z"/>
+      <g fill="none" stroke="#fff" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="7.4" cy="14.4" r="3.5"/><circle cx="17.6" cy="14.4" r="3.5"/>
+        <path d="M7.4 14.4h4.2l3.1-5.2h2.9"/><path d="M11.6 14.4 14 8"/><path d="M12.6 8h3.2"/>
+      </g>
+    </svg>
+  </span>
+
+  <span class="hero__mark" aria-hidden="true">
+    <svg viewBox="0 0 47 32">
+      <path fill="#F2702E" d="M20 0 L27.5 0 L46.5 32 L38 32 L35 26 L27 26 L27.5 12.5 L23.5 11 L21 12.5 L8 32 L0 32 Z"/>
+    </svg>
+  </span>
+
+  <span class="marker marker--bolt" aria-hidden="true">
+    <svg viewBox="0 0 26 34">
+      <path fill="#F2702E" d="M13 0C5.8 0 0 5.5 0 12.3c0 7.1 8.7 16.9 11.9 21.1a1.4 1.4 0 0 0 2.2 0C17.3 29.2 26 19.4 26 12.3 26 5.5 20.2 0 13 0Z"/>
+      <path fill="#fff" d="M14.9 5.4 8.2 14.1h4.1l-1.2 6.9 6.7-9h-4.1Z"/>
+    </svg>
+  </span>
+
+  <span class="marker marker--pin" aria-hidden="true">
+    <svg viewBox="0 0 23 31">
+      <path fill="#F2702E" d="M11.5 0C5.1 0 0 5 0 11.2c0 6.5 7.7 15.4 10.5 19.2a1.2 1.2 0 0 0 2 0C15.3 26.6 23 17.7 23 11.2 23 5 17.9 0 11.5 0Z"/>
+      <circle cx="11.5" cy="11" r="4.1" fill="#fff"/>
+    </svg>
+  </span>
+
+</div>
+
+<div class="stage">
+
+  <!-- ============================ SIDEBAR ============================ -->
+  <div class="rail">
+
+    <!-- card 1 -->
+    <section class="card card--dark" aria-label="Axle network">
+      <div class="brand">
+        <svg viewBox="0 0 47 32" aria-hidden="true" focusable="false">
+          <path fill="#F2702E" d="M20 0 L27.5 0 L46.5 32 L38 32 L35 26 L27 26 L27.5 12.5 L23.5 11 L21 12.5 L8 32 L0 32 Z"/>
+        </svg>
+        <span class="word">Axle</span>
+      </div>
+
+      <div class="dots" role="presentation">
+        <span class="dot dot--on"></span>
+        <span class="dot dot--off"></span>
+        <span class="dot dot--off"></span>
+      </div>
+
+      <span class="stat__num"><span class="rise">4K</span></span>
+      <span class="stat__rule"></span>
+      <span class="stat__label">Connected
+Mobility
+Points</span>
+    </section>
+
+    <!-- card 2 -->
+    <section class="card card--gauge" aria-label="Emissions down 42 percent">
+      <div class="gauge__title">Emissions</div>
+      <div class="gauge__ring">
+        <svg viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+<circle cx="100.00" cy="39.80" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="105.18" cy="40.02" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="110.31" cy="40.69" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="115.37" cy="41.80" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="120.32" cy="43.33" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="125.12" cy="45.29" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="129.73" cy="47.65" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="134.12" cy="50.40" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="138.25" cy="53.52" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="142.11" cy="56.98" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="145.65" cy="60.76" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="148.85" cy="64.83" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="151.70" cy="69.16" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="154.16" cy="73.71" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="156.22" cy="78.47" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="157.86" cy="83.38" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="159.07" cy="88.41" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="159.85" cy="93.54" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="160.19" cy="98.70" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="160.07" cy="103.88" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="159.52" cy="109.03" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="158.52" cy="114.12" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="157.09" cy="119.09" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="155.24" cy="123.93" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="152.98" cy="128.59" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="150.32" cy="133.04" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="147.30" cy="137.24" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="143.92" cy="141.17" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="140.22" cy="144.80" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="136.22" cy="148.09" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="131.95" cy="151.02" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="127.45" cy="153.58" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="122.74" cy="155.74" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="117.86" cy="157.49" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="112.85" cy="158.81" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="107.75" cy="159.70" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="102.59" cy="160.14" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="97.41" cy="160.14" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="92.25" cy="159.70" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="87.15" cy="158.81" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="82.14" cy="157.49" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="77.26" cy="155.74" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="72.55" cy="153.58" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="68.05" cy="151.02" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="63.78" cy="148.09" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="59.78" cy="144.80" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="56.08" cy="141.17" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="52.70" cy="137.24" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="49.68" cy="133.04" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="47.02" cy="128.59" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="44.76" cy="123.93" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="42.91" cy="119.09" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="41.48" cy="114.12" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="40.48" cy="109.03" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="39.93" cy="103.88" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="39.81" cy="98.70" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="40.15" cy="93.54" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="40.93" cy="88.41" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="42.14" cy="83.38" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="43.78" cy="78.47" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="45.84" cy="73.71" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="48.30" cy="69.16" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="51.15" cy="64.83" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="54.35" cy="60.76" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="57.89" cy="56.98" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="61.75" cy="53.52" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="65.88" cy="50.40" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="70.27" cy="47.65" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="74.88" cy="45.29" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="79.68" cy="43.33" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="84.63" cy="41.80" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="89.69" cy="40.69" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="94.82" cy="40.02" r="1.05" fill="#3A3B40" opacity="0.34"/>
+<circle cx="100.00" cy="31.10" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="105.21" cy="31.30" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="110.39" cy="31.89" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="115.51" cy="32.87" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="120.55" cy="34.23" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="125.46" cy="35.98" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="130.23" cy="38.09" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="134.83" cy="40.55" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="139.22" cy="43.35" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="143.39" cy="46.48" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="147.32" cy="49.92" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="150.97" cy="53.64" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="154.33" cy="57.63" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="157.38" cy="61.86" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="160.10" cy="66.31" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="162.48" cy="70.95" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="164.49" cy="75.76" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="166.14" cy="80.70" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="167.41" cy="85.76" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="168.30" cy="90.90" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="168.79" cy="96.09" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="168.89" cy="101.30" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="168.59" cy="106.51" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="167.90" cy="111.68" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="166.83" cy="116.78" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="165.36" cy="121.79" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="163.53" cy="126.67" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="161.33" cy="131.40" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="158.78" cy="135.94" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="155.89" cy="140.29" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="152.69" cy="144.40" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="149.18" cy="148.26" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="145.39" cy="151.84" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="141.34" cy="155.12" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="137.05" cy="158.09" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="132.55" cy="160.73" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="127.87" cy="163.01" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="123.02" cy="164.94" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="118.04" cy="166.50" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="112.96" cy="167.67" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="107.81" cy="168.46" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="102.61" cy="168.85" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="97.39" cy="168.85" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="92.19" cy="168.46" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="87.04" cy="167.67" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="81.96" cy="166.50" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="76.98" cy="164.94" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="72.13" cy="163.01" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="67.45" cy="160.73" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="62.95" cy="158.09" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="58.66" cy="155.12" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="54.61" cy="151.84" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="50.82" cy="148.26" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="47.31" cy="144.40" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="44.11" cy="140.29" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="41.22" cy="135.94" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="38.67" cy="131.40" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="36.47" cy="126.67" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="34.64" cy="121.79" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="33.17" cy="116.78" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="32.10" cy="111.68" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="31.41" cy="106.51" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="31.11" cy="101.30" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="31.21" cy="96.09" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="31.70" cy="90.90" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="32.59" cy="85.76" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="33.86" cy="80.70" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="35.51" cy="75.76" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="37.52" cy="70.95" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="39.90" cy="66.31" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="42.62" cy="61.86" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="45.67" cy="57.63" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="49.03" cy="53.64" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="52.68" cy="49.92" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="56.61" cy="46.48" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="60.78" cy="43.35" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="65.17" cy="40.55" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="69.77" cy="38.09" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="74.54" cy="35.98" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="79.45" cy="34.23" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="84.49" cy="32.87" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="89.61" cy="31.89" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="94.79" cy="31.30" r="1.05" fill="#3A3B40" opacity="0.44"/>
+<circle cx="100.00" cy="24.80" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="105.19" cy="24.98" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="110.35" cy="25.52" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="115.47" cy="26.41" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="120.51" cy="27.65" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="125.45" cy="29.24" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="130.27" cy="31.16" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="134.95" cy="33.41" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="139.46" cy="35.98" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="143.78" cy="38.86" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="147.89" cy="42.02" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="151.78" cy="45.47" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="155.42" cy="49.17" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="158.79" cy="53.11" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="161.89" cy="57.28" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="164.69" cy="61.65" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="167.18" cy="66.21" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="169.35" cy="70.92" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="171.19" cy="75.78" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="172.69" cy="80.75" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="173.85" cy="85.81" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="174.65" cy="90.94" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="175.10" cy="96.11" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="175.19" cy="101.30" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="174.92" cy="106.48" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="174.29" cy="111.64" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="173.31" cy="116.73" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="171.99" cy="121.75" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="170.31" cy="126.67" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="168.31" cy="131.45" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="165.97" cy="136.09" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="163.33" cy="140.56" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="160.38" cy="144.83" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="157.14" cy="148.89" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="153.63" cy="152.71" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="149.87" cy="156.29" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="145.86" cy="159.59" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="141.64" cy="162.62" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="137.22" cy="165.34" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="132.63" cy="167.75" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="127.88" cy="169.84" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="122.99" cy="171.60" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="118.00" cy="173.01" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="112.92" cy="174.08" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="107.77" cy="174.80" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="102.60" cy="175.16" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="97.40" cy="175.16" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="92.23" cy="174.80" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="87.08" cy="174.08" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="82.00" cy="173.01" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="77.01" cy="171.60" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="72.12" cy="169.84" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="67.37" cy="167.75" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="62.78" cy="165.34" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="58.36" cy="162.62" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="54.14" cy="159.59" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="50.13" cy="156.29" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="46.37" cy="152.71" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="42.86" cy="148.89" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="39.62" cy="144.83" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="36.67" cy="140.56" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="34.03" cy="136.09" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="31.69" cy="131.45" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="29.69" cy="126.67" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="28.01" cy="121.75" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="26.69" cy="116.73" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="25.71" cy="111.64" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="25.08" cy="106.48" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="24.81" cy="101.30" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="24.90" cy="96.11" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="25.35" cy="90.94" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="26.15" cy="85.81" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="27.31" cy="80.75" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="28.81" cy="75.78" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="30.65" cy="70.92" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="32.82" cy="66.21" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="35.31" cy="61.65" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="38.11" cy="57.28" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="41.21" cy="53.11" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="44.58" cy="49.17" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="48.22" cy="45.47" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="52.11" cy="42.02" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="56.22" cy="38.86" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="60.54" cy="35.98" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="65.05" cy="33.41" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="69.73" cy="31.16" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="74.55" cy="29.24" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="79.49" cy="27.65" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="84.53" cy="26.41" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="89.65" cy="25.52" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="94.81" cy="24.98" r="1.05" fill="#3A3B40" opacity="0.54"/>
+<circle cx="100.00" cy="18.70" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="105.21" cy="18.87" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="110.40" cy="19.37" r="1.65" fill="#F2702E"/>
+<circle cx="115.54" cy="20.20" r="1.65" fill="#F2702E"/>
+<circle cx="120.62" cy="21.36" r="1.65" fill="#F2702E"/>
+<circle cx="125.62" cy="22.84" r="1.65" fill="#F2702E"/>
+<circle cx="130.51" cy="24.64" r="1.65" fill="#F2702E"/>
+<circle cx="135.27" cy="26.75" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="139.90" cy="29.16" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="144.35" cy="31.86" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="148.63" cy="34.85" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="152.70" cy="38.09" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="156.56" cy="41.60" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="160.18" cy="45.34" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="163.56" cy="49.31" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="166.68" cy="53.49" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="169.52" cy="57.85" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="172.08" cy="62.40" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="174.34" cy="67.09" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="176.30" cy="71.92" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="177.94" cy="76.87" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="179.26" cy="81.91" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="180.26" cy="87.02" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="180.92" cy="92.19" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="181.26" cy="97.39" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="181.26" cy="102.61" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="180.92" cy="107.81" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="180.26" cy="112.98" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="179.26" cy="118.09" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="177.94" cy="123.13" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="176.30" cy="128.08" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="174.34" cy="132.91" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="172.08" cy="137.60" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="169.52" cy="142.15" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="166.68" cy="146.51" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="163.56" cy="150.69" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="160.18" cy="154.66" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="156.56" cy="158.40" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="152.70" cy="161.91" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="148.63" cy="165.15" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="144.35" cy="168.14" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="139.90" cy="170.84" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="135.27" cy="173.25" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="130.51" cy="175.36" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="125.62" cy="177.16" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="120.62" cy="178.64" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="115.54" cy="179.80" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="110.40" cy="180.63" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="105.21" cy="181.13" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="100.00" cy="181.30" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="94.79" cy="181.13" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="89.60" cy="180.63" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="84.46" cy="179.80" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="79.38" cy="178.64" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="74.38" cy="177.16" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="69.49" cy="175.36" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="64.73" cy="173.25" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="60.10" cy="170.84" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="55.65" cy="168.14" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="51.37" cy="165.15" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="47.30" cy="161.91" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="43.44" cy="158.40" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="39.82" cy="154.66" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="36.44" cy="150.69" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="33.32" cy="146.51" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="30.48" cy="142.15" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="27.92" cy="137.60" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="25.66" cy="132.91" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="23.70" cy="128.08" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="22.06" cy="123.13" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="20.74" cy="118.09" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="19.74" cy="112.98" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="19.08" cy="107.81" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="18.74" cy="102.61" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="18.74" cy="97.39" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="19.08" cy="92.19" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="19.74" cy="87.02" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="20.74" cy="81.91" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="22.06" cy="76.87" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="23.70" cy="71.92" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="25.66" cy="67.09" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="27.92" cy="62.40" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="30.48" cy="57.85" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="33.32" cy="53.49" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="36.44" cy="49.31" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="39.82" cy="45.34" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="43.44" cy="41.60" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="47.30" cy="38.09" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="51.37" cy="34.85" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="55.65" cy="31.86" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="60.10" cy="29.16" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="64.73" cy="26.75" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="69.49" cy="24.64" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="74.38" cy="22.84" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="79.38" cy="21.36" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="84.46" cy="20.20" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="89.60" cy="19.37" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="94.79" cy="18.87" r="1.05" fill="#3A3B40" opacity="0.64"/>
+<circle cx="100.00" cy="12.00" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="105.21" cy="12.15" r="1.65" fill="#F2702E"/>
+<circle cx="110.41" cy="12.62" r="1.65" fill="#F2702E"/>
+<circle cx="115.57" cy="13.39" r="1.65" fill="#F2702E"/>
+<circle cx="120.67" cy="14.46" r="1.65" fill="#F2702E"/>
+<circle cx="125.70" cy="15.84" r="1.65" fill="#F2702E"/>
+<circle cx="130.64" cy="17.51" r="1.65" fill="#F2702E"/>
+<circle cx="135.47" cy="19.47" r="1.65" fill="#F2702E"/>
+<circle cx="140.18" cy="21.71" r="1.65" fill="#F2702E"/>
+<circle cx="144.75" cy="24.23" r="1.65" fill="#F2702E"/>
+<circle cx="149.16" cy="27.01" r="1.65" fill="#F2702E"/>
+<circle cx="153.40" cy="30.05" r="1.65" fill="#F2702E"/>
+<circle cx="157.45" cy="33.34" r="1.65" fill="#F2702E"/>
+<circle cx="161.30" cy="36.86" r="1.65" fill="#F2702E"/>
+<circle cx="164.93" cy="40.60" r="1.65" fill="#F2702E"/>
+<circle cx="168.33" cy="44.55" r="1.65" fill="#F2702E"/>
+<circle cx="171.50" cy="48.70" r="1.65" fill="#F2702E"/>
+<circle cx="174.41" cy="53.02" r="1.65" fill="#F2702E"/>
+<circle cx="177.06" cy="57.51" r="1.65" fill="#F2702E"/>
+<circle cx="179.45" cy="62.15" r="1.65" fill="#F2702E"/>
+<circle cx="181.55" cy="66.93" r="1.65" fill="#F2702E"/>
+<circle cx="183.36" cy="71.82" r="1.65" fill="#F2702E"/>
+<circle cx="184.89" cy="76.80" r="1.65" fill="#F2702E"/>
+<circle cx="186.11" cy="81.87" r="1.65" fill="#F2702E"/>
+<circle cx="187.04" cy="87.01" r="1.65" fill="#F2702E"/>
+<circle cx="187.65" cy="92.19" r="1.65" fill="#F2702E"/>
+<circle cx="187.96" cy="97.39" r="1.65" fill="#F2702E"/>
+<circle cx="187.96" cy="102.61" r="1.65" fill="#F2702E"/>
+<circle cx="187.65" cy="107.81" r="1.65" fill="#F2702E"/>
+<circle cx="187.04" cy="112.99" r="1.65" fill="#F2702E"/>
+<circle cx="186.11" cy="118.13" r="1.65" fill="#F2702E"/>
+<circle cx="184.89" cy="123.20" r="1.65" fill="#F2702E"/>
+<circle cx="183.36" cy="128.18" r="1.65" fill="#F2702E"/>
+<circle cx="181.55" cy="133.07" r="1.65" fill="#F2702E"/>
+<circle cx="179.45" cy="137.85" r="1.65" fill="#F2702E"/>
+<circle cx="177.06" cy="142.49" r="1.65" fill="#F2702E"/>
+<circle cx="174.41" cy="146.98" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="171.50" cy="151.30" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="168.33" cy="155.45" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="164.93" cy="159.40" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="161.30" cy="163.14" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="157.45" cy="166.66" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="153.40" cy="169.95" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="149.16" cy="172.99" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="144.75" cy="175.77" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="140.18" cy="178.29" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="135.47" cy="180.53" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="130.64" cy="182.49" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="125.70" cy="184.16" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="120.67" cy="185.54" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="115.57" cy="186.61" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="110.41" cy="187.38" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="105.21" cy="187.85" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="100.00" cy="188.00" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="94.79" cy="187.85" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="89.59" cy="187.38" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="84.43" cy="186.61" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="79.33" cy="185.54" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="74.30" cy="184.16" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="69.36" cy="182.49" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="64.53" cy="180.53" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="59.82" cy="178.29" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="55.25" cy="175.77" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="50.84" cy="172.99" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="46.60" cy="169.95" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="42.55" cy="166.66" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="38.70" cy="163.14" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="35.07" cy="159.40" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="31.67" cy="155.45" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="28.50" cy="151.30" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="25.59" cy="146.98" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="22.94" cy="142.49" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="20.55" cy="137.85" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="18.45" cy="133.07" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="16.64" cy="128.18" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="15.11" cy="123.20" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="13.89" cy="118.13" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="12.96" cy="112.99" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="12.35" cy="107.81" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="12.04" cy="102.61" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="12.04" cy="97.39" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="12.35" cy="92.19" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="12.96" cy="87.01" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="13.89" cy="81.87" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="15.11" cy="76.80" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="16.64" cy="71.82" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="18.45" cy="66.93" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="20.55" cy="62.15" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="22.94" cy="57.51" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="25.59" cy="53.02" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="28.50" cy="48.70" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="31.67" cy="44.55" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="35.07" cy="40.60" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="38.70" cy="36.86" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="42.55" cy="33.34" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="46.60" cy="30.05" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="50.84" cy="27.01" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="55.25" cy="24.23" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="59.82" cy="21.71" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="64.53" cy="19.47" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="69.36" cy="17.51" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="74.30" cy="15.84" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="79.33" cy="14.46" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="84.43" cy="13.39" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="89.59" cy="12.62" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="94.79" cy="12.15" r="1.05" fill="#3A3B40" opacity="0.74"/>
+<circle cx="174.22" cy="147.28" r="3.40" fill="#F2702E"/>
+        </svg>
+      </div>
+      <div class="gauge__value"><span class="rise">-42</span></div>
+    </section>
+
+    <!-- card 3 -->
+    <section class="card card--electric" aria-label="Electric journeys 88 percent">
+      <div class="ej__title">Electric<br>Journeys</div>
+      <div class="leaf">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18.5 4.2c1 6.4-1.1 10.6-4.2 12.6-2.6 1.7-6 1.6-7.6-.4-1.7-2.1-1.1-5.6 1.2-7.9 2.6-2.6 6.7-3.9 10.6-4.3Z"/>
+          <path d="M6.2 20.6c0-3.9 1.5-7.3 4.2-9.9"/>
+        </svg>
+      </div>
+      <div class="ej__num"><span class="rise">88%</span></div>
+      <div class="bar"><span class="bar__fill"></span><span class="bar__rest"></span></div>
+    </section>
+
+  </div>
+
+  <!-- ============================ MAIN ============================ -->
+  <div class="main">
+
+    <nav class="nav" aria-label="Primary">
+      <button class="iconbtn nav__burger" type="button" aria-label="Menu"
+              aria-expanded="false" aria-controls="nav-links">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#F2F3F5" stroke-width="1.5"
+             stroke-linecap="round" aria-hidden="true">
+          <path d="M4.5 7.5h15"/><path d="M4.5 12h15"/><path d="M4.5 16.5h15"/>
+        </svg>
+      </button>
+
+      <div class="nav__links" id="nav-links">
+      <a class="pill pill--solid pill--home" href="#">Home</a>
+      <a class="pill pill--ghost pill--a" href="#">City Mobility</a>
+      <a class="pill pill--ghost pill--b" href="#">Energy Hubs</a>
+      <a class="pill pill--ghost pill--c" href="#">Our Progress</a>
+      <a class="pill pill--solid pill--cta" href="#">Better Journeys
+        <span class="grid4" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      </a>
+      </div>
+
+      <span class="nav__gap" aria-hidden="true"></span>
+
+      <button class="iconbtn" type="button" aria-label="Live navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#F2F3F5" stroke-width="1.5"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 2.6 20 21.4 12 17.1 4 21.4Z"/>
+        </svg>
+      </button>
+      <button class="iconbtn" type="button" aria-label="Riders">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#F2F3F5" stroke-width="1.5"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="8" r="3.1"/>
+          <path d="M6.6 19.4a5.6 5.6 0 0 1 10.8 0"/>
+          <circle cx="4.6" cy="11.4" r="2"/>
+          <path d="M1.4 18.6a3.4 3.4 0 0 1 3.6-3"/>
+          <circle cx="19.4" cy="11.4" r="2"/>
+          <path d="M22.6 18.6a3.4 3.4 0 0 0-3.6-3"/>
+        </svg>
+      </button>
+      <button class="iconbtn" type="button" aria-label="Network layers">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#F2F3F5" stroke-width="1.5"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 2.4 20.6 7v10L12 21.6 3.4 17V7Z"/>
+          <path d="M3.4 7 12 11.9 20.6 7"/>
+          <path d="M12 11.9v9.7"/>
+        </svg>
+      </button>
+    </nav>
+
+    <section class="hero" aria-label="Axle city network">
+
+      <div class="pitch">
+        <h1><span class="ln"><span class="ln__i">Less friction.</span></span><span class="ln"><span class="ln__i">More possibility.</span></span></h1>
+        <button class="btn" type="button">
+          <span class="btn__disc">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 4.5 17 12l-8 7.5"/>
+            </svg>
+          </span>
+          <span class="btn__label">Discover Our Network</span>
+        </button>
+      </div>
+
+      <div class="aside">
+        <div class="riders">
+          <span class="avatars" aria-hidden="true">
+            <span class="av av--a"></span>
+            <span class="av av--b"></span>
+          </span>
+          <div class="riders__pill">20K+ Riders</div>
+        </div>
+        <p>One connected network for a city in motion. Axle brings clean transport and convenient charging closer to every neighbourhood.</p>
+      </div>
+
+      <div class="fab">
+        <button class="fab__plus" type="button" aria-label="Zoom in">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#141517" stroke-width="2.6"
+               stroke-linecap="round" aria-hidden="true"><path d="M12 4v16M4 12h16"/></svg>
+        </button>
+        <button class="fab__layers" type="button" aria-label="Map layers">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3.2 21.4 8 12 12.8 2.6 8Z"/>
+            <path d="M3.4 12.6 12 17l8.6-4.4"/>
+            <path d="M3.4 16.6 12 21l8.6-4.4"/>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+
+<script>
+(function(){
+  /* Source photo is 1534 x 1025. These are the top-left corners of each
+     overlay in that image's own pixel space, derived from the reference. */
+  var IW = 1534, IH = 1025;
+  var BW = 1.003125, BH = 1.005807, BL = 0, BT = -0.002345;
+  var pins = [
+    ['.marker--bike', 449.2, 405.0],
+    ['.hero__mark',   740.8, 461.1],
+    ['.marker--bolt', 1277.2, 465.9],
+    ['.marker--pin',  1454.0, 479.1]
+  ].map(function(p){
+    var el = document.querySelector(p[0]);
+    return el ? {el: el, sx: p[1], sy: p[2]} : null;
+  }).filter(Boolean);
+
+  function place(){
+    var w = window.innerWidth, h = window.innerHeight;
+    var bw = w * BW, bh = h * BH;              /* the img box */
+    var s  = Math.max(bw / IW, bh / IH);       /* object-fit: cover */
+    var ox = w * BL + (bw - IW * s) / 2;       /* object-position: 50% 50% */
+    var oy = h * BT + (bh - IH * s) / 2;
+    for (var i = 0; i < pins.length; i++){
+      var p = pins[i];
+      p.el.style.left = (ox + p.sx * s).toFixed(1) + 'px';
+      p.el.style.top  = (oy + p.sy * s).toFixed(1) + 'px';
+    }
+  }
+  place();
+  var t;
+  addEventListener('resize', function(){
+    clearTimeout(t); t = setTimeout(place, 60);
+  }, {passive:true});
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
+})();
+</script>
+<script>
+(function(){
+  /* Burger menu. CSS owns the breakpoint entirely — this only tracks open
+     state, so nothing here measures or listens to the viewport. */
+  var nav = document.querySelector('.nav');
+  var btn = document.querySelector('.nav__burger');
+  var panel = document.getElementById('nav-links');
+  if (!nav || !btn || !panel) return;
+
+  function setOpen(open){
+    nav.classList.toggle('is-open', open);
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+
+  btn.addEventListener('click', function(e){
+    e.stopPropagation();
+    setOpen(btn.getAttribute('aria-expanded') !== 'true');
+  });
+
+  panel.addEventListener('click', function(e){
+    if (e.target.closest('a')) setOpen(false);   /* follow the link, then close */
+  });
+
+  document.addEventListener('click', function(e){
+    if (!nav.contains(e.target)) setOpen(false);
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true'){
+      setOpen(false);
+      btn.focus();
+    }
+  });
+})();
+</script>
+<script>
+/* ===================== ENTRANCE — runs once, then stops =====================
+   One master sequence built on the Web Animations API. No library, no
+   ScrollTrigger, no IntersectionObserver, no rAF loop, no interval, no
+   listeners left behind. Every tween is registered in one array; when the last
+   one settles the class comes off and every animation is cancelled, which
+   hands each element back to its authored CSS. After ~1.8s the document holds
+   no animation objects at all and the page is exactly the static design.
+
+                       ms      what
+   ---------------------------------------------------------------
+   SURFACES — clip wipe, left to right, reading order
+   0                   620     nav row (all pills, tools, burger)
+   80                  480     rail (all three cards)
+   880                 560     CTA
+   980                 520     riders chip
+   1020                500     map controls
+
+   CONTENT — opacity and transform
+   460 / 550           950     headline, line by line   (masked reveal)
+   580 / 660 / 740     ...     card interiors, once the rail wipe has passed
+   1060                560     paragraph
+   1180 +70 each       460     the three map pins
+   ---------------------------------------------------------------
+   last frame at 1780ms
+
+   Overlaps are deliberate: the rail is still settling when the headline starts,
+   and the headline is still resolving when the CTA arrives, so the sequence
+   reads as one gesture rather than a queue.                                  */
+(function(){
+  var root = document.documentElement;
+  if (!root.classList.contains('js-entrance')) return;   /* reduced motion, or no WAAPI */
+
+  var EXPO = 'cubic-bezier(.16, 1, .3, 1)';   /* surfaces + typography */
+  var SOFT = 'cubic-bezier(.33, 1, .68, 1)';  /* supporting content */
+
+  function start(){
+    if (root.dataset.entranceRan) return;              /* cannot fire twice */
+    root.dataset.entranceRan = '1';
+
+    var running = [];
+    var q = function(sel, ctx){
+      return Array.prototype.slice.call((ctx || document).querySelectorAll(sel));
+    };
+
+    /* A single keyframe makes the browser read the element's current computed
+       style as the implicit "from", so the distances stay in --k units and stay
+       correct on desktop, tablet and mobile without being restated here. */
+    function play(el, to, delay, duration, ease){
+      if (!el) return;
+      running.push(el.animate([to], {
+        delay: delay, duration: duration, easing: ease,
+        fill: 'both', composite: 'replace'
+      }));
+    }
+    /* CONTENT keyframes — opacity and transform. Never applied to glass. */
+    var SHOW = {opacity: 1, transform: 'none'};
+    var RISE = {transform: 'none'};                                 /* masked type */
+    var RING = {opacity: 1, transform: 'translate(-50%,-50%)'};     /* keeps its centring */
+    var FILL = {transform: 'scaleX(1)'};                            /* bar sweep */
+    /* SURFACE keyframes — clip only. The three static sides stay negative so
+       the wipe can never crop the element it is revealing. */
+    var WIPE = {clipPath: 'inset(-25% 0% -25% -25%)'};
+
+    /* Only wipe glass that is actually on screen at this width. Asking the
+       element directly is sturdier than branching on the breakpoint: the
+       burger is display:none on desktop, and the pills inherit visibility
+       :hidden from the closed panel on tablet and mobile, so one predicate
+       covers every layout without knowing which one is active. */
+    function onScreen(el){
+      var s = getComputedStyle(el);
+      return s.display !== 'none' && s.visibility !== 'hidden';
+    }
+
+    /* --- surfaces: each pane of glass wipes itself in, left to right.
+           The clip has to sit on the glass, not on .nav or .rail, so the
+           stagger is per element rather than one sweep per group. --- */
+    q('.nav .pill, .nav .iconbtn').filter(onScreen).forEach(function(el, i){
+      play(el, WIPE, i * 45, 520, EXPO);
+    });
+    q('.rail > .card').forEach(function(card, i){
+      play(card, WIPE, 80 + i * 90, 460, EXPO);
+    });
+
+    /* --- content inside the cards, starting once the rail wipe has passed
+           over them, so nothing is revealed twice. None of these carry a
+           backdrop-filter, so they keep the richer opacity/transform
+           vocabulary; the three display numbers reuse the headline's masked
+           reveal, and everything else takes the behaviour its anchoring
+           implies. --- */
+    var CARDS = [
+      {sel: '.card--dark',    at: 580, items: [
+        ['.brand',      SHOW, 0,   480, SOFT],
+        ['.dot',        SHOW, 55,  360, SOFT, 45],   /* three dots, tight stagger */
+        ['.rise',       RISE, 130, 780, EXPO],       /* 4K */
+        ['.stat__rule', SHOW, 210, 520, SOFT],
+        ['.stat__label',SHOW, 240, 480, SOFT]
+      ]},
+      {sel: '.card--gauge',   at: 660, items: [
+        ['.gauge__title', SHOW,  0,  460, SOFT],
+        ['.gauge__ring',  RING, 55,  720, EXPO],
+        ['.rise',         RISE, 130, 780, EXPO]      /* -42 */
+      ]},
+      {sel: '.card--electric', at: 740, items: [
+        ['.ej__title', SHOW, 0,   460, SOFT],
+        ['.leaf',      SHOW, 55,  520, SOFT],
+        ['.rise',      RISE, 110, 780, EXPO],        /* 88% */
+        ['.bar',       SHOW, 190, 520, SOFT],
+        ['.bar__fill', FILL, 270, 760, EXPO]         /* the value sweeps in */
+      ]}
+    ];
+    CARDS.forEach(function(card){
+      var scope = document.querySelector(card.sel);
+      if (!scope) return;
+      card.items.forEach(function(it){
+        q(it[0], scope).forEach(function(el, n){
+          play(el, it[1], card.at + it[2] + n * (it[5] || 0), it[3], it[4]);
+        });
+      });
+    });
+
+    /* --- the message --- */
+    q('.pitch h1 .ln__i').forEach(function(line, i){
+      play(line, RISE, 460 + i * 90, 950, EXPO);
+    });
+    play(document.querySelector('.btn'), WIPE, 880, 560, EXPO);
+
+    /* --- supporting column, then the controls --- */
+    play(document.querySelector('.riders'),  WIPE,  980, 520, EXPO);
+    play(document.querySelector('.fab'),     WIPE, 1020, 500, EXPO);
+    play(document.querySelector('.aside p'), SHOW, 1060, 560, SOFT);
+
+    /* --- the pins settle onto the photograph. Opacity and scale only: the
+           photograph itself is never touched, only these foreground markers. */
+    q('.marker').forEach(function(m, i){
+      play(m, SHOW, 1180 + i * 70, 460, SOFT);
+    });
+
+    if (!running.length){ root.classList.remove('js-entrance'); return; }
+
+    var settled = 0, done = false;
+    var finish = function(){
+      if (done || ++settled < running.length) return;
+      done = true;
+      /* Drop the initial states first, then cancel — same frame, so the
+         authored style is already underneath and nothing flashes. */
+      root.classList.remove('js-entrance');
+      running.forEach(function(a){ a.cancel(); });
+      running.length = 0;
+    };
+    running.forEach(function(a){ a.finished.then(finish, finish); });
+  }
+
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', start, {once: true});
+  } else {
+    start();
+  }
+})();
+</script>
+</body>
+</html>
